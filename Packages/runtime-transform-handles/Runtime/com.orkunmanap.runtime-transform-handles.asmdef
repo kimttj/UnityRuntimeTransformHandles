@@ -1,7 +1,7 @@
 {
     "name": "com.orkunmanap.runtime-transform-handles",
     "rootNamespace": "TransformHandles",
-    "references": [],
+    "references": ["Unity.InputSystem"],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
