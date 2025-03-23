@@ -2,9 +2,9 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
-    [Range(0f, 9f)] [SerializeField] private float sensitivity = 2f;
-    [Range(0f, 90f)] [SerializeField] private float yRotationLimit = 60f;
-    [Range(0f, 90f)] [SerializeField] private float xRotationLimit = 60f;
+    [Range(0f, 9f)][SerializeField] private float sensitivity = 2f;
+    [Range(0f, 90f)][SerializeField] private float yRotationLimit = 60f;
+    [Range(0f, 90f)][SerializeField] private float xRotationLimit = 60f;
     [SerializeField] private float zoomSpeed = 10f;
 
     private Camera _camera;
@@ -28,7 +28,7 @@ public class CameraMovement : MonoBehaviour
 
     private void UpdateRotation()
     {
-        if(sensitivity == 0f) return;
+        if (sensitivity == 0f) return;
         _rotation.x += Input.GetAxis(XAxis) * sensitivity;
         _rotation.x = Mathf.Clamp(_rotation.x, -xRotationLimit, xRotationLimit);
 
@@ -43,7 +43,7 @@ public class CameraMovement : MonoBehaviour
 
     private void UpdateCameraZoom()
     {
-        if(zoomSpeed == 0f) return;
+        if (zoomSpeed == 0f) return;
         _fieldOfView -= Input.GetAxis("Mouse ScrollWheel") * zoomSpeed;
         _camera.fieldOfView = _fieldOfView;
         _camera.fieldOfView = Mathf.Clamp(_fieldOfView, 35f, 100f);

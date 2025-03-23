@@ -40,9 +40,9 @@ namespace TransformHandles
         private void UpdateCollider()
         {
             var newMesh = MeshUtils.CreateTube(height, sideCount, bottomRadius, bottomThickness, topRadius, topThickness);
-			
+
             newMesh.name = "tube";
-			
+
             _meshFilter.sharedMesh = newMesh;
             //_meshCollider.sharedMesh = newMesh;
 

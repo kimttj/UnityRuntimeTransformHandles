@@ -5,24 +5,24 @@ namespace TransformHandles
     public class ScaleHandle : MonoBehaviour
     {
         private Handle _parentHandle;
-        
+
         public ScaleAxis xAxis;
         public ScaleAxis yAxis;
         public ScaleAxis zAxis;
 
         public ScaleGlobal globalScale;
-        
+
         private bool _handleInitialized;
 
         public void Initialize(Handle handle)
         {
             if (_handleInitialized) return;
-            
+
             _parentHandle = handle;
-            
+
             if (_parentHandle.axes is HandleAxes.X or HandleAxes.XY or HandleAxes.XZ or HandleAxes.XYZ)
                 xAxis.Initialize(_parentHandle, Vector3.right);
-            
+
             if (_parentHandle.axes is HandleAxes.Y or HandleAxes.XY or HandleAxes.YZ or HandleAxes.XYZ)
                 yAxis.Initialize(_parentHandle, Vector3.up);
 
@@ -32,7 +32,7 @@ namespace TransformHandles
             if (_parentHandle.axes != HandleAxes.X && _parentHandle.axes != HandleAxes.Y && _parentHandle.axes != HandleAxes.Z)
             {
                 globalScale.Initialize(_parentHandle, HandleBase.GetVectorFromAxes(_parentHandle.axes));
-                
+
                 globalScale.InteractionStart += OnGlobalInteractionStart;
                 globalScale.InteractionUpdate += OnGlobalInteractionUpdate;
                 globalScale.InteractionEnd += OnGlobalInteractionEnd;
@@ -59,10 +59,10 @@ namespace TransformHandles
         {
             xAxis.SetDefaultColor();
             xAxis.delta = 0;
-            
+
             yAxis.SetDefaultColor();
             yAxis.delta = 0;
-            
+
             zAxis.SetDefaultColor();
             zAxis.delta = 0;
         }

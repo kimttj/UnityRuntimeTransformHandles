@@ -12,7 +12,7 @@ namespace TransformHandles
 		[SerializeField] private float thickness;
 
 		[SerializeField] private Transform colliderTransform;
-		
+
 		private MeshCollider _meshCollider;
 		private MeshFilter _meshFilter;
 
@@ -26,7 +26,7 @@ namespace TransformHandles
 		{
 			UpdateCollider();
 		}
-		
+
 		private void Update()
 		{
 			if (Input.GetKeyDown(KeyCode.K))
@@ -39,10 +39,10 @@ namespace TransformHandles
 		{
 			var newMesh = MeshUtils.CreateTorus(radius, thickness, segmentCount, sideCount);
 			newMesh.name = "torus";
-			
+
 			_meshFilter.sharedMesh = newMesh;
 			_meshCollider.sharedMesh = newMesh;
-			
+
 			/*
 			AssetDatabase.CreateAsset(newMesh, "Assets/torus.asset");
 			*/

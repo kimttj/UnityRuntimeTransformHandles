@@ -15,7 +15,7 @@ namespace TransformHandles
         private Vector3 _perp;
         private Plane _plane;
         private Vector3 _interactionOffset;
-        
+
         private GameObject _quadGameObject;
         private Transform _cameraTransform;
 
@@ -25,14 +25,14 @@ namespace TransformHandles
             _axis1 = axis1;
             _axis2 = axis2;
             _perp = perp;
-            
+
             _handleCamera = ParentHandle.handleCamera;
 
             DefaultColor = defaultColor;
-            
+
             _quadGameObject = quadMeshRenderer.gameObject;
             _cameraTransform = _handleCamera.transform;
-            
+
             _quadGameObject.transform.localPosition = (_axis1 + _axis2) * 0.2f;
         }
 
@@ -41,14 +41,14 @@ namespace TransformHandles
             var ray = _handleCamera.ScreenPointToRay(Input.mousePosition);
 
             _plane.Raycast(ray, out var d);
-            
+
             var hitPoint = ray.GetPoint(d);
 
             var offset = hitPoint + _interactionOffset - _startPosition;
 
             var axis = _axis1 + _axis2;
             var snapping = ParentHandle.positionSnap;
-            
+
             var snap = Vector3.Scale(snapping, axis).magnitude;
             if (snap != 0 && ParentHandle.snappingType == SnappingType.Relative)
             {
@@ -58,7 +58,7 @@ namespace TransformHandles
             }
 
             var position = _startPosition + offset;
-            
+
             if (snap != 0 && ParentHandle.snappingType == SnappingType.Absolute)
             {
                 if (snapping.x != 0) position.x = Mathf.Round(position.x / snapping.x) * snapping.x;
@@ -79,11 +79,11 @@ namespace TransformHandles
 
             var position = ParentHandle.target.position;
             _plane = new Plane(rPerp, position);
-            
+
             var ray = _handleCamera.ScreenPointToRay(Input.mousePosition);
 
             _plane.Raycast(ray, out var d);
-            
+
             var hitPoint = ray.GetPoint(d);
             _startPosition = position;
             _interactionOffset = _startPosition - hitPoint;
@@ -91,8 +91,8 @@ namespace TransformHandles
 
         private void Update()
         {
-            if(_handleCamera == null) return;
-            
+            if (_handleCamera == null) return;
+
             var axis1 = _axis1;
             var rAxis1 = ParentHandle.space == Space.Self
                 ? ParentHandle.target.rotation * axis1
@@ -100,7 +100,7 @@ namespace TransformHandles
             var angle1 = Vector3.Angle(_cameraTransform.forward, rAxis1);
             if (angle1 < 90)
                 axis1 = -axis1;
-            
+
             var axis2 = _axis2;
             var rAxis2 = ParentHandle.space == Space.Self
                 ? ParentHandle.target.rotation * axis2
@@ -108,10 +108,10 @@ namespace TransformHandles
             var angle2 = Vector3.Angle(_cameraTransform.forward, rAxis2);
             if (angle2 < 90)
                 axis2 = -axis2;
-            
+
             _quadGameObject.transform.localPosition = (axis1 + axis2) * 0.2f;
         }
-        
+
         private void LateUpdate()
         {
             var dot = Vector3.Dot(_quadGameObject.transform.up, _cameraTransform.forward);
@@ -123,7 +123,7 @@ namespace TransformHandles
         {
             quadMeshRenderer.material.color = color;
         }
-        
+
         public override void SetDefaultColor()
         {
             quadMeshRenderer.material.color = DefaultColor;

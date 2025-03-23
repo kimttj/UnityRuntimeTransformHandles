@@ -16,7 +16,7 @@ namespace TransformHandles
         public void Initialize(Handle handle)
         {
             if (_handleInitialized) return;
-            
+
             _parentHandle = handle;
             transform.SetParent(_parentHandle.transform, false);
 
