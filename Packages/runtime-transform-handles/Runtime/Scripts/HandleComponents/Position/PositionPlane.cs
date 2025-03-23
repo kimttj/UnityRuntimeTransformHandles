@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using TransformHandles.Utils;
 
 namespace TransformHandles
 {
@@ -21,6 +22,8 @@ namespace TransformHandles
 
         public void Initialize(Handle handle, Vector3 axis1, Vector3 axis2, Vector3 perp)
         {
+            InputUtils.EnableEnhancedTouch();
+
             ParentHandle = handle;
             _axis1 = axis1;
             _axis2 = axis2;
@@ -38,12 +41,13 @@ namespace TransformHandles
 
         public override void Interact(Vector3 pPreviousPosition)
         {
-            var ray = _handleCamera.ScreenPointToRay(Input.mousePosition);
+            var inputPos = InputUtils.GetInputScreenPosition();
+            if (inputPos == Vector2.zero) return;
 
+            var ray = _handleCamera.ScreenPointToRay(inputPos);
             _plane.Raycast(ray, out var d);
 
             var hitPoint = ray.GetPoint(d);
-
             var offset = hitPoint + _interactionOffset - _startPosition;
 
             var axis = _axis1 + _axis2;
@@ -63,7 +67,7 @@ namespace TransformHandles
             {
                 if (snapping.x != 0) position.x = Mathf.Round(position.x / snapping.x) * snapping.x;
                 if (snapping.y != 0) position.y = Mathf.Round(position.y / snapping.y) * snapping.y;
-                if (snapping.x != 0) position.z = Mathf.Round(position.z / snapping.z) * snapping.z;
+                if (snapping.z != 0) position.z = Mathf.Round(position.z / snapping.z) * snapping.z;
             }
 
             ParentHandle.target.position = position;
@@ -80,8 +84,10 @@ namespace TransformHandles
             var position = ParentHandle.target.position;
             _plane = new Plane(rPerp, position);
 
-            var ray = _handleCamera.ScreenPointToRay(Input.mousePosition);
+            var inputPos = InputUtils.GetInputScreenPosition();
+            if (inputPos == Vector2.zero) return;
 
+            var ray = _handleCamera.ScreenPointToRay(inputPos);
             _plane.Raycast(ray, out var d);
 
             var hitPoint = ray.GetPoint(d);
@@ -98,16 +104,14 @@ namespace TransformHandles
                 ? ParentHandle.target.rotation * axis1
                 : axis1;
             var angle1 = Vector3.Angle(_cameraTransform.forward, rAxis1);
-            if (angle1 < 90)
-                axis1 = -axis1;
+            if (angle1 < 90) axis1 = -axis1;
 
             var axis2 = _axis2;
             var rAxis2 = ParentHandle.space == Space.Self
                 ? ParentHandle.target.rotation * axis2
                 : axis2;
             var angle2 = Vector3.Angle(_cameraTransform.forward, rAxis2);
-            if (angle2 < 90)
-                axis2 = -axis2;
+            if (angle2 < 90) axis2 = -axis2;
 
             _quadGameObject.transform.localPosition = (axis1 + axis2) * 0.2f;
         }

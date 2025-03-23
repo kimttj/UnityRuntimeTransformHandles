@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TransformHandles.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.InputSystem;
 
 namespace TransformHandles
 {
@@ -19,12 +20,12 @@ namespace TransformHandles
         [SerializeField] private Color highlightColor = Color.white;
 
         [Header("Shortcuts")]
-        [SerializeField] private KeyCode positionShortcut = KeyCode.W;
-        [SerializeField] private KeyCode rotationShortcut = KeyCode.E;
-        [SerializeField] private KeyCode scaleShortcut = KeyCode.R;
-        [SerializeField] private KeyCode allShortcut = KeyCode.A;
-        [SerializeField] private KeyCode spaceShortcut = KeyCode.X;
-        [SerializeField] private KeyCode pivotShortcut = KeyCode.Z;
+        [SerializeField] private Key positionShortcut = Key.W;
+        [SerializeField] private Key rotationShortcut = Key.E;
+        [SerializeField] private Key scaleShortcut = Key.R;
+        [SerializeField] private Key allShortcut = Key.A;
+        [SerializeField] private Key spaceShortcut = Key.X;
+        [SerializeField] private Key pivotShortcut = Key.Z;
 
         private RaycastHit[] _rayHits;
 
@@ -67,6 +68,8 @@ namespace TransformHandles
         private void InitializeManager()
         {
             if (_isInitialized) return;
+
+            InputUtils.EnableEnhancedTouch();
 
             mainCamera = mainCamera == null ? Camera.main : mainCamera;
 
@@ -231,18 +234,17 @@ namespace TransformHandles
         protected virtual void GetHandle(ref HandleBase handle, ref Vector3 hitPoint)
         {
             _rayHits = new RaycastHit[16];
-
             var size = 0;
+
             try
             {
-                var ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+                var ray = mainCamera.ScreenPointToRay(InputUtils.GetInputScreenPosition());
                 size = Physics.RaycastNonAlloc(ray, _rayHits, 1000, layerMask);
             }
             catch (MissingReferenceException)
             {
                 mainCamera = Camera.main;
                 Debug.Log("Camera is null, trying to find main camera");
-
                 if (mainCamera == null)
                 {
                     Debug.Log("Main camera is null, aborting");
@@ -251,23 +253,19 @@ namespace TransformHandles
                 }
             }
 
-            if (size == 0)
-            {
-                if (_hoveredHandle == null) return;
-                return;
-            }
+            if (size == 0) return;
 
             Array.Sort(_rayHits, (x, y) => x.distance.CompareTo(y.distance));
 
             foreach (var hit in _rayHits)
             {
-                var hitCollider = hit.collider;
-                if (hitCollider == null) continue;
-                handle = hit.collider.gameObject.GetComponentInParent<HandleBase>();
-
-                if (handle == null) continue;
-                hitPoint = hit.point;
-                return;
+                if (hit.collider == null) continue;
+                handle = hit.collider.GetComponentInParent<HandleBase>();
+                if (handle != null)
+                {
+                    hitPoint = hit.point;
+                    return;
+                }
             }
         }
 
@@ -288,32 +286,34 @@ namespace TransformHandles
 
         protected virtual void MouseInput()
         {
-            if (Input.GetMouseButton(0) && _draggingHandle != null)
+            if (InputUtils.IsPrimaryPressed() && _draggingHandle != null)
             {
                 _draggingHandle.Interact(_previousMousePosition);
                 OnInteraction();
             }
 
-            if (Input.GetMouseButtonDown(0) && _hoveredHandle != null)
+            if (InputUtils.IsPrimaryPressedThisFrame() && _hoveredHandle != null)
             {
                 _draggingHandle = _hoveredHandle;
                 _draggingHandle.StartInteraction(_handleHitPoint);
                 OnInteractionStart();
             }
 
-            if (Input.GetMouseButtonUp(0) && _draggingHandle != null)
+            if (InputUtils.IsPrimaryReleasedThisFrame() && _draggingHandle != null)
             {
                 _draggingHandle.EndInteraction();
                 _draggingHandle = null;
                 OnInteractionEnd();
             }
 
-            _previousMousePosition = Input.mousePosition;
+            _previousMousePosition = InputUtils.GetInputScreenPosition();
         }
 
         protected virtual void KeyboardInput()
         {
-            if (Input.GetKeyDown(positionShortcut))
+            if (Keyboard.current == null) return;
+
+            if (Keyboard.current[positionShortcut].wasPressedThisFrame)
             {
                 foreach (var handle in _handleGroupMap.Keys)
                 {
@@ -321,7 +321,7 @@ namespace TransformHandles
                 }
             }
 
-            if (Input.GetKeyDown(rotationShortcut))
+            if (Keyboard.current[rotationShortcut].wasPressedThisFrame)
             {
                 foreach (var handle in _handleGroupMap.Keys)
                 {
@@ -329,7 +329,7 @@ namespace TransformHandles
                 }
             }
 
-            if (Input.GetKeyDown(scaleShortcut))
+            if (Keyboard.current[scaleShortcut].wasPressedThisFrame)
             {
                 foreach (var handle in _handleGroupMap.Keys)
                 {
@@ -337,7 +337,7 @@ namespace TransformHandles
                 }
             }
 
-            if (Input.GetKeyDown(allShortcut))
+            if (Keyboard.current[allShortcut].wasPressedThisFrame)
             {
                 foreach (var handle in _handleGroupMap.Keys)
                 {
@@ -345,7 +345,7 @@ namespace TransformHandles
                 }
             }
 
-            if (Input.GetKeyDown(spaceShortcut))
+            if (Keyboard.current[spaceShortcut].wasPressedThisFrame)
             {
                 foreach (var handle in _handleGroupMap.Keys)
                 {
@@ -353,7 +353,7 @@ namespace TransformHandles
                 }
             }
 
-            if (Input.GetKeyDown(pivotShortcut))
+            if (Keyboard.current[pivotShortcut].wasPressedThisFrame)
             {
                 foreach (var group in _handleGroupMap.Values)
                 {

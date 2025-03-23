@@ -24,6 +24,8 @@ namespace TransformHandles
 
         public void Initialize(Handle handle)
         {
+            InputUtils.EnableEnhancedTouch();
+
             ParentHandle = handle;
             _handleCamera = ParentHandle.handleCamera;
 
@@ -39,7 +41,10 @@ namespace TransformHandles
 
         public override void Interact(Vector3 pPreviousPosition)
         {
-            var cameraRay = _handleCamera.ScreenPointToRay(Input.mousePosition);
+            var inputPos = InputUtils.GetInputScreenPosition();
+            if (inputPos == Vector2.zero) return;
+
+            var cameraRay = _handleCamera.ScreenPointToRay(inputPos);
 
             var closestT = MathUtils.ClosestPointOnRay(_rAxisRay, cameraRay);
             var hitPoint = _rAxisRay.GetPoint(closestT);
@@ -59,7 +64,7 @@ namespace TransformHandles
             {
                 if (snapping.x != 0) position.x = Mathf.Round(position.x / snapping.x) * snapping.x;
                 if (snapping.y != 0) position.y = Mathf.Round(position.y / snapping.y) * snapping.y;
-                if (snapping.x != 0) position.z = Mathf.Round(position.z / snapping.z) * snapping.z;
+                if (snapping.z != 0) position.z = Mathf.Round(position.z / snapping.z) * snapping.z;
             }
 
             ParentHandle.target.position = position;
@@ -79,7 +84,10 @@ namespace TransformHandles
 
             _rAxisRay = new Ray(_startPosition, rAxis);
 
-            var cameraRay = _handleCamera.ScreenPointToRay(Input.mousePosition);
+            var inputPos = InputUtils.GetInputScreenPosition();
+            if (inputPos == Vector2.zero) return;
+
+            var cameraRay = _handleCamera.ScreenPointToRay(inputPos);
 
             var closestT = MathUtils.ClosestPointOnRay(_rAxisRay, cameraRay);
             var hitPoint = _rAxisRay.GetPoint(closestT);

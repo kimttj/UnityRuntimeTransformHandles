@@ -1,5 +1,5 @@
-﻿using TransformHandles.Utils;
-using UnityEngine;
+﻿using UnityEngine;
+using TransformHandles.Utils;
 
 namespace TransformHandles
 {
@@ -21,6 +21,8 @@ namespace TransformHandles
 
         public void Initialize(Handle handle, Vector3 pAxis)
         {
+            InputUtils.EnableEnhancedTouch();
+
             ParentHandle = handle;
             _axis = pAxis;
             DefaultColor = defaultColor;
@@ -36,7 +38,11 @@ namespace TransformHandles
 
         public override void Interact(Vector3 pPreviousPosition)
         {
-            var cameraRay = _handleCamera.ScreenPointToRay(Input.mousePosition);
+            var inputPos = InputUtils.GetInputScreenPosition();
+            if (inputPos == Vector2.zero) return;
+
+            var cameraRay = _handleCamera.ScreenPointToRay(inputPos);
+
 
             var closestT = MathUtils.ClosestPointOnRay(_rAxisRay, cameraRay);
             var hitPoint = _rAxisRay.GetPoint(closestT);
@@ -79,7 +85,10 @@ namespace TransformHandles
             var position = ParentHandle.target.position;
             _rAxisRay = new Ray(position, rAxis);
 
-            var cameraRay = _handleCamera.ScreenPointToRay(Input.mousePosition);
+            var inputPos = InputUtils.GetInputScreenPosition();
+            if (inputPos == Vector2.zero) return;
+
+            var cameraRay = _handleCamera.ScreenPointToRay(inputPos);
 
             var closestT = MathUtils.ClosestPointOnRay(_rAxisRay, cameraRay);
             var hitPoint = _rAxisRay.GetPoint(closestT);

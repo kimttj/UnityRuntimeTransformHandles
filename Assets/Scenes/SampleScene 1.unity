@@ -449,12 +449,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   highlightColor: {r: 1, g: 1, b: 1, a: 1}
-  positionShortcut: 119
-  rotationShortcut: 101
-  scaleShortcut: 114
-  allShortcut: 97
-  spaceShortcut: 120
-  pivotShortcut: 122
+  positionShortcut: 37
+  rotationShortcut: 19
+  scaleShortcut: 32
+  allShortcut: 15
+  spaceShortcut: 38
+  pivotShortcut: 40
 --- !u!1 &963194225
 GameObject:
   m_ObjectHideFlags: 0

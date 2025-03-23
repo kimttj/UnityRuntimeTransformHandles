@@ -1,6 +1,7 @@
 using TransformHandles.Utils;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace TransformHandles
 {
@@ -29,7 +30,7 @@ namespace TransformHandles
 
 		private void Update()
 		{
-			if (Input.GetKeyDown(KeyCode.K))
+			if (Keyboard.current != null && Keyboard.current.kKey.wasPressedThisFrame)
 			{
 				UpdateCollider();
 			}
