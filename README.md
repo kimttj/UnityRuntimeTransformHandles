@@ -1,3 +1,40 @@
+
+# UnityRuntimeTransformHandles (Input System Compatible Fork)
+
+> Forked from [manaporkun/UnityRuntimeTransformHandles](https://github.com/manaporkun/UnityRuntimeTransformHandles)
+
+This is a customized fork of the original **UnityRuntimeTransformHandles** project, updated to better support modern Unity development environments.
+
+## 🔧 Changes in This Fork
+- ✅ Migrated to the **Unity Input System**
+- ✅ Upgraded Unity version to **2022.3.59f1 (LTS)**
+
+These changes improve compatibility with newer Unity projects and enhance support for cross-platform input handling.
+
+## ⚠ Notes
+Make sure your Unity project has the **"Input System" package installed**, and set `Active Input Handling` to either **"Both"** or **"Input System Package (New)"** under **Edit > Project Settings > Player**.
+
+## Install
+
+1. Open the Package Manager from `Window > Package Manager`
+2. `"+" button > Add package from git URL`
+3. Enter the following
+   * https://github.com/kimttj/UnityRuntimeTransformHandles.git?path=/Packages/runtime-transform-handles
+
+Or, open `Packages/manifest.json` and add the following to the dependencies block.
+
+```json
+{
+    "dependencies": {
+         "com.orkunmanap.runtime-transform-handles": "https://github.com/kimttj/UnityRuntimeTransformHandles.git?path=/Packages/runtime-transform-handles/"
+    }
+}
+```
+
+---
+
+## 📄 Original README (from upstream project)
+
 # Runtime Transform Handles for Unity 
 
 ![Icon](https://i.imgur.com/NRdmzlQ.png)

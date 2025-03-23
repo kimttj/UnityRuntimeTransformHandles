@@ -1,6 +1,7 @@
 using TransformHandles.Utils;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace TransformHandles
 {
@@ -31,7 +32,7 @@ namespace TransformHandles
 
         private void Update()
         {
-            if (Input.GetKeyDown(KeyCode.L))
+            if (Keyboard.current != null && Keyboard.current.lKey.wasPressedThisFrame)
             {
                 UpdateCollider();
             }
@@ -40,9 +41,9 @@ namespace TransformHandles
         private void UpdateCollider()
         {
             var newMesh = MeshUtils.CreateTube(height, sideCount, bottomRadius, bottomThickness, topRadius, topThickness);
-			
+
             newMesh.name = "tube";
-			
+
             _meshFilter.sharedMesh = newMesh;
             //_meshCollider.sharedMesh = newMesh;
 

@@ -1,6 +1,7 @@
 ﻿using TransformHandles.Utils;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace TransformHandles
 {
@@ -9,7 +10,7 @@ namespace TransformHandles
 		[SerializeField] private int sideCount = 15;
 		[SerializeField] private float topRadius = 0.02f;
 		[SerializeField] private int heightSegmentCount = 1;
-		
+
 		[SerializeField] private Transform colliderTransform;
 
 		[SerializeField] private float height;
@@ -33,7 +34,7 @@ namespace TransformHandles
 
 		private void Update()
 		{
-			if (Input.GetKeyDown(KeyCode.K))
+			if (Keyboard.current != null && Keyboard.current.kKey.wasPressedThisFrame)
 			{
 				UpdateCollider();
 			}
@@ -42,15 +43,15 @@ namespace TransformHandles
 		private void UpdateCollider()
 		{
 			var newMesh = MeshUtils.CreateCone(
-				height, 
-				bottomRadius, 
+				height,
+				bottomRadius,
 				topRadius, sideCount, heightSegmentCount);
-			
+
 			newMesh.name = "cone";
-			
+
 			_meshFilter.sharedMesh = newMesh;
 			_meshCollider.sharedMesh = newMesh;
-			
+
 			/*if (save)
 			{
 				AssetDatabase.CreateAsset(newMesh, "Assets/cone.asset");

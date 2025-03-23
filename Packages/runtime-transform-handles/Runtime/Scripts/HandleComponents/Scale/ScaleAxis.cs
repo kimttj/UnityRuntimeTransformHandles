@@ -1,5 +1,5 @@
-﻿using TransformHandles.Utils;
-using UnityEngine;
+﻿using UnityEngine;
+using TransformHandles.Utils;
 
 namespace TransformHandles
 {
@@ -10,21 +10,23 @@ namespace TransformHandles
         [SerializeField] private MeshRenderer lineMeshRenderer;
 
         private Camera _handleCamera;
-        
+
         private const float Size = .75f;
-        
+
         private Vector3 _axis;
         private Vector3 _startScale;
 
         private float _interactionDistance;
         private Ray _rAxisRay;
-        
+
         public void Initialize(Handle handle, Vector3 pAxis)
         {
+            InputUtils.EnableEnhancedTouch();
+
             ParentHandle = handle;
             _axis = pAxis;
             DefaultColor = defaultColor;
-            
+
             _handleCamera = ParentHandle.handleCamera;
         }
 
@@ -36,11 +38,15 @@ namespace TransformHandles
 
         public override void Interact(Vector3 pPreviousPosition)
         {
-            var cameraRay = _handleCamera.ScreenPointToRay(Input.mousePosition);
+            var inputPos = InputUtils.GetInputScreenPosition();
+            if (inputPos == Vector2.zero) return;
 
-            var   closestT = MathUtils.ClosestPointOnRay(_rAxisRay, cameraRay);
+            var cameraRay = _handleCamera.ScreenPointToRay(inputPos);
+
+
+            var closestT = MathUtils.ClosestPointOnRay(_rAxisRay, cameraRay);
             var hitPoint = _rAxisRay.GetPoint(closestT);
-            
+
             var distance = Vector3.Distance(ParentHandle.target.position, hitPoint);
             var axisScaleDelta = distance / _interactionDistance - 1f;
 
@@ -78,21 +84,24 @@ namespace TransformHandles
 
             var position = ParentHandle.target.position;
             _rAxisRay = new Ray(position, rAxis);
-            
-            var cameraRay = _handleCamera.ScreenPointToRay(Input.mousePosition);
-            
-            var   closestT = MathUtils.ClosestPointOnRay(_rAxisRay, cameraRay);
+
+            var inputPos = InputUtils.GetInputScreenPosition();
+            if (inputPos == Vector2.zero) return;
+
+            var cameraRay = _handleCamera.ScreenPointToRay(inputPos);
+
+            var closestT = MathUtils.ClosestPointOnRay(_rAxisRay, cameraRay);
             var hitPoint = _rAxisRay.GetPoint(closestT);
-            
+
             _interactionDistance = Vector3.Distance(position, hitPoint);
         }
-        
+
         public override void SetColor(Color color)
         {
             cubeMeshRenderer.material.color = color;
             lineMeshRenderer.material.color = color;
         }
-        
+
         public override void SetDefaultColor()
         {
             cubeMeshRenderer.material.color = DefaultColor;

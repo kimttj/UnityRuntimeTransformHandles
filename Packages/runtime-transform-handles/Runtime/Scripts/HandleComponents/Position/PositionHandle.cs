@@ -19,7 +19,7 @@ namespace TransformHandles
         public void Initialize(Handle handle)
         {
             if (_handleInitialized) return;
-            
+
             _parentHandle = handle;
 
             if (_parentHandle.axes is HandleAxes.X or HandleAxes.XY or HandleAxes.XZ or HandleAxes.XYZ)
@@ -57,7 +57,7 @@ namespace TransformHandles
                 yPlane.gameObject.SetActive(true);
                 yPlane.Initialize(_parentHandle, Vector3.right, Vector3.up, Vector3.forward);
             }
-            
+
             _handleInitialized = true;
         }
     }

@@ -7,11 +7,11 @@ namespace TransformHandles
     {
         [SerializeField] private float autoScaleSizeInPixels = 192;
         [SerializeField] public bool autoScale;
-        
+
         public virtual event Action<Handle> OnInteractionStartEvent;
         public virtual event Action<Handle> OnInteractionEvent;
         public virtual event Action<Handle> OnInteractionEndEvent;
-        public virtual event Action<Handle> OnHandleDestroyedEvent; 
+        public virtual event Action<Handle> OnHandleDestroyedEvent;
 
         public Transform target;
         public HandleAxes axes = HandleAxes.XYZ;
@@ -28,18 +28,18 @@ namespace TransformHandles
         private PositionHandle PositionHandle { get; set; }
         private RotationHandle RotationHandle { get; set; }
         private ScaleHandle ScaleHandle { get; set; }
-        
+
         private static TransformHandleManager Manager => TransformHandleManager.Instance;
-        
+
         protected virtual void Awake()
         {
             PositionHandle = GetComponentInChildren<PositionHandle>();
             RotationHandle = GetComponentInChildren<RotationHandle>();
             ScaleHandle = GetComponentInChildren<ScaleHandle>();
-            
+
             Clear();
         }
-        
+
         protected virtual void OnEnable()
         {
             handleCamera = Manager.mainCamera;
@@ -53,7 +53,7 @@ namespace TransformHandles
         protected void OnDestroy()
         {
             if (Manager == null) return;
-            
+
             Manager.RemoveHandle(this);
             OnHandleDestroyedEvent?.Invoke(this);
         }
@@ -61,16 +61,16 @@ namespace TransformHandles
         protected virtual void LateUpdate()
         {
             UpdateHandleTransformation();
-            
+
             if (!autoScale || handleCamera == null) return;
             transform.PreserveScaleOnScreen(handleCamera.fieldOfView, autoScaleSizeInPixels, handleCamera);
         }
-        
+
         public virtual void Enable(Transform targetTransform)
         {
             target = targetTransform;
             transform.position = targetTransform.position;
-            
+
             CreateHandles();
         }
 
@@ -90,7 +90,7 @@ namespace TransformHandles
         {
             OnInteractionEvent?.Invoke(this);
         }
-        
+
         public virtual void InteractionEnd()
         {
             OnInteractionEndEvent?.Invoke(this);
@@ -99,7 +99,7 @@ namespace TransformHandles
         public virtual void ChangeHandleType(HandleType handleType)
         {
             type = handleType;
-            
+
             Clear();
             CreateHandles();
         }
@@ -115,15 +115,15 @@ namespace TransformHandles
         public virtual void ChangeAxes(HandleAxes handleAxes)
         {
             axes = handleAxes;
-            
+
             Clear();
             CreateHandles();
         }
 
         protected virtual void UpdateHandleTransformation()
         {
-            if(!target) return;
-            
+            if (!target) return;
+
             transform.position = target.transform.position;
             if (space == Space.Self || type == HandleType.Scale)
             {
@@ -181,13 +181,13 @@ namespace TransformHandles
             RotationHandle.Initialize(this);
             RotationHandle.gameObject.SetActive(true);
         }
-        
+
         private void ActivateScaleHandle()
         {
             ScaleHandle.Initialize(this);
             ScaleHandle.gameObject.SetActive(true);
         }
-        
+
         protected virtual void Clear()
         {
             if (PositionHandle.gameObject.activeSelf) PositionHandle.gameObject.SetActive(false);
