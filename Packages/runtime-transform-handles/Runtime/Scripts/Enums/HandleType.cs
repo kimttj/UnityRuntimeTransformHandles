@@ -2,7 +2,7 @@ namespace TransformHandles
 {
     public enum HandleType
     {
-        Seleccted,
+        Outline,
         Position,
         Rotation,
         Scale,

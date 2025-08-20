@@ -47,8 +47,8 @@ namespace TransformHandles
         {
             switch (handleType)
             {
-                case HandleType.Seleccted:
-                    UpdateSelected();
+                case HandleType.Outline:
+                    UpdateOutline();
                     break;
                 case HandleType.Position:
                     UpdatePosition();
@@ -89,7 +89,7 @@ namespace TransformHandles
             ResetInitialGhostTransformProperties();
         }
 
-        private void UpdateSelected()
+        private void UpdateOutline()
         {
             // 選択されたオブジェクトの枠線を描画する
 
