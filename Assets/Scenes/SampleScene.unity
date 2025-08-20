@@ -705,7 +705,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   highlightColor: {r: 1, g: 1, b: 1, a: 1}
-  selectedShortcut: 33
+  outlineShortcut: 33
   positionShortcut: 37
   rotationShortcut: 19
   scaleShortcut: 32
@@ -1431,7 +1431,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'S: Selected
+  m_text: 'S: Outline
 
     W: Position
 
@@ -1441,8 +1441,8 @@ MonoBehaviour:
 
     A: All
 
-    X: Change
-    Space
+    X:
+    Change Space
 
     Z: Change Origin'
   m_isRightToLeft: 0
