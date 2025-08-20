@@ -235,6 +235,47 @@ namespace TransformHandles
 
             _transformHashSet.Add(target);
 
+            // HandleType.Outlineの場合、新しいターゲットにアウトラインを適用
+            if (handle.type == HandleType.Outline)
+            {
+                var outlineManager = TransformHandles.OutlineManager.Instance;
+                if (outlineManager != null)
+                {
+                    // 現在のハンドルに関連するすべてのターゲットオブジェクトを取得
+                    var actualTargets = GetTargetsForHandle(handle);
+
+                    if (actualTargets != null && actualTargets.Count > 0)
+                    {
+                        // すべての実際のターゲットオブジェクトにCustomOutlineをアタッチ
+                        var objects = new List<GameObject>();
+
+                        foreach (var actualTarget in actualTargets)
+                        {
+                            // Ghostオブジェクトを除外
+                            if (actualTarget.GetComponent<Ghost>() != null)
+                            {
+                                continue;
+                            }
+
+                            var customOutline = actualTarget.GetComponent<TransformHandles.CustomOutline>();
+                            if (customOutline == null)
+                            {
+                                // CustomOutlineスクリプトを動的にアタッチ
+                                customOutline = actualTarget.gameObject.AddComponent<TransformHandles.CustomOutline>();
+                            }
+
+                            objects.Add(actualTarget.gameObject);
+                        }
+
+                        // アウトラインを選択
+                        if (objects.Count > 0)
+                        {
+                            outlineManager.SelectObjects(objects.ToArray());
+                        }
+                    }
+                }
+            }
+
             return true;
         }
 
