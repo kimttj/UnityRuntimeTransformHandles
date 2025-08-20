@@ -60,6 +60,38 @@ namespace TransformHandles
             SceneManager.activeSceneChanged -= OnActiveSceneChanged;
         }
 
+        private void OnDestroy()
+        {
+            // シーン終了時にアウトラインをクリア
+            ClearAllOutlines();
+        }
+
+        private void ClearAllOutlines()
+        {
+            // すべてのターゲットオブジェクトからCustomOutlineコンポーネントを削除
+            if (_transformHashSet != null)
+            {
+                foreach (var target in _transformHashSet)
+                {
+                    if (target != null)
+                    {
+                        var customOutline = target.GetComponent<TransformHandles.CustomOutline>();
+                        if (customOutline != null)
+                        {
+                            if (Application.isPlaying)
+                            {
+                                Destroy(customOutline);
+                            }
+                            else
+                            {
+                                DestroyImmediate(customOutline);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         protected virtual void OnActiveSceneChanged(Scene arg0, Scene scene)
         {
             _isInitialized = false;
@@ -203,10 +235,32 @@ namespace TransformHandles
             // ハンドルが破棄される前に、関連するオブジェクトからCustomOutlineコンポーネントを削除
             if (handle != null && handle.type == HandleType.Outline)
             {
-                var outlineManager = TransformHandles.OutlineManager.Instance;
-                if (outlineManager != null)
+                // ハンドルに関連するターゲットからCustomOutlineを削除
+                var manager = TransformHandleManager.Instance;
+                if (manager != null)
                 {
-                    outlineManager.ClearSelection();
+                    var targets = manager.GetTargetsForHandle(handle);
+                    if (targets != null)
+                    {
+                        foreach (var target in targets)
+                        {
+                            if (target != null)
+                            {
+                                var customOutline = target.GetComponent<TransformHandles.CustomOutline>();
+                                if (customOutline != null)
+                                {
+                                    if (Application.isPlaying)
+                                    {
+                                        Destroy(customOutline);
+                                    }
+                                    else
+                                    {
+                                        DestroyImmediate(customOutline);
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -240,28 +294,28 @@ namespace TransformHandles
             {
                 var outlineManager = TransformHandles.OutlineManager.Instance;
                 if (outlineManager != null)
-                {
-                    // 現在のハンドルに関連するすべてのターゲットオブジェクトを取得
-                    var actualTargets = GetTargetsForHandle(handle);
+            {
+                // 現在のハンドルに関連するすべてのターゲットオブジェクトを取得
+                var actualTargets = GetTargetsForHandle(handle);
 
-                    if (actualTargets != null && actualTargets.Count > 0)
-                    {
-                        // すべての実際のターゲットオブジェクトにCustomOutlineをアタッチ
+                if (actualTargets != null && actualTargets.Count > 0)
+                {
+                    // すべての実際のターゲットオブジェクトにCustomOutlineをアタッチ
                         var objects = new List<GameObject>();
 
-                        foreach (var actualTarget in actualTargets)
+                    foreach (var actualTarget in actualTargets)
+                    {
+                        // Ghostオブジェクトを除外
+                        if (actualTarget.GetComponent<Ghost>() != null)
                         {
-                            // Ghostオブジェクトを除外
-                            if (actualTarget.GetComponent<Ghost>() != null)
-                            {
-                                continue;
-                            }
+                            continue;
+                        }
 
-                            var customOutline = actualTarget.GetComponent<TransformHandles.CustomOutline>();
-                            if (customOutline == null)
-                            {
-                                // CustomOutlineスクリプトを動的にアタッチ
-                                customOutline = actualTarget.gameObject.AddComponent<TransformHandles.CustomOutline>();
+                        var customOutline = actualTarget.GetComponent<TransformHandles.CustomOutline>();
+                        if (customOutline == null)
+                        {
+                            // CustomOutlineスクリプトを動的にアタッチ
+                            customOutline = actualTarget.gameObject.AddComponent<TransformHandles.CustomOutline>();
                             }
 
                             objects.Add(actualTarget.gameObject);

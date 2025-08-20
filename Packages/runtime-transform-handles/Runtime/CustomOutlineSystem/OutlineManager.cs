@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 namespace TransformHandles
 {
@@ -60,6 +61,21 @@ namespace TransformHandles
     void Update()
     {
       // 必要に応じて更新処理を追加
+    }
+
+    void OnDestroy()
+    {
+      // シングルトンインスタンスが破棄される時のクリーンアップ
+      if (_instance == this)
+      {
+        // すべてのアウトラインをクリア
+        ClearSelection();
+        allOutlines.Clear();
+        selectedOutlines.Clear();
+
+        // インスタンスをnullに設定
+        _instance = null;
+      }
     }
 
     // グローバルアウトラインの有効/無効を切り替え
