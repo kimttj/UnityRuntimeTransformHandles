@@ -172,6 +172,19 @@ namespace TransformHandles
             if (_handleGroupMap.Count == 0) _handleActive = false;
         }
 
+        public List<Transform> GetTargets()
+        {
+            var targets = new List<Transform>();
+
+            // 現在アクティブなハンドルグループのターゲットを取得
+            foreach (var group in _handleGroupMap.Values)
+            {
+                targets.AddRange(group.Transforms);
+            }
+
+            return targets;
+        }
+
         private static void DestroyHandle(Handle handle)
         {
             DestroyImmediate(handle.gameObject);

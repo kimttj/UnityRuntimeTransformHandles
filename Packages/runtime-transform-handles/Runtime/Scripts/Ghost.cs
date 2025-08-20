@@ -1,5 +1,7 @@
 using System;
 using UnityEngine;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace TransformHandles
 {
@@ -91,8 +93,45 @@ namespace TransformHandles
 
         private void UpdateOutline()
         {
-            // 選択されたオブジェクトの枠線を描画する
+            // 選択されたオブジェクトにアウトラインを表示
+            var outlineManager = TransformHandles.OutlineManager.Instance;
+            if (outlineManager != null)
+            {
+                // TransformHandleManagerから実際のターゲットオブジェクトを取得
+                var actualTargets = TransformHandleManager.Instance.GetTargets();
 
+                if (actualTargets != null && actualTargets.Count > 0)
+                {
+                    // すべての実際のターゲットオブジェクトにCustomOutlineをアタッチ
+                    var objects = new List<GameObject>();
+
+                    for (int i = 0; i < actualTargets.Count; i++)
+                    {
+                        var actualTarget = actualTargets[i];
+
+                        // Ghostオブジェクトを除外
+                        if (actualTarget.GetComponent<Ghost>() != null)
+                        {
+                            continue;
+                        }
+
+                        var customOutline = actualTarget.GetComponent<TransformHandles.CustomOutline>();
+                        if (customOutline == null)
+                        {
+                            // CustomOutlineスクリプトを動的にアタッチ
+                            customOutline = actualTarget.gameObject.AddComponent<TransformHandles.CustomOutline>();
+                        }
+
+                        objects.Add(actualTarget.gameObject);
+                    }
+
+                    // 実際のターゲットオブジェクトにアウトラインを適用
+                    if (objects.Count > 0)
+                    {
+                        outlineManager.SelectObjects(objects.ToArray());
+                    }
+                }
+            }
         }
         private void UpdatePosition()
         {

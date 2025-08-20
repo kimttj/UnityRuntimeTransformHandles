@@ -175,8 +175,41 @@ namespace TransformHandles
 
         private void ActivateOutlineHandle()
         {
-            // 選択されたオブジェクトの枠線を描画する
+            // アウトライン機能を有効にする
+            var outlineManager = TransformHandles.OutlineManager.Instance;
+            if (outlineManager != null)
+            {
+                // TransformHandleManagerから実際のターゲットオブジェクトを取得
+                var actualTargets = Manager.GetTargets();
 
+                if (actualTargets != null && actualTargets.Count > 0)
+                {
+                    // すべての実際のターゲットオブジェクトにCustomOutlineをアタッチ
+                    GameObject[] objects = new GameObject[actualTargets.Count];
+                    for (int i = 0; i < actualTargets.Count; i++)
+                    {
+                        var actualTarget = actualTargets[i];
+
+                        // Ghostオブジェクトを除外
+                        if (actualTarget.GetComponent<Ghost>() != null)
+                        {
+                            continue;
+                        }
+
+                        var customOutline = actualTarget.GetComponent<TransformHandles.CustomOutline>();
+                        if (customOutline == null)
+                        {
+                            // CustomOutlineスクリプトを動的にアタッチ
+                            customOutline = actualTarget.gameObject.AddComponent<TransformHandles.CustomOutline>();
+                        }
+
+                        objects[i] = actualTarget.gameObject;
+                    }
+
+                    // アウトラインを選択
+                    outlineManager.SelectObjects(objects);
+                }
+            }
         }
 
         private void ActivatePositionHandle()
@@ -202,6 +235,16 @@ namespace TransformHandles
             if (PositionHandle.gameObject.activeSelf) PositionHandle.gameObject.SetActive(false);
             if (RotationHandle.gameObject.activeSelf) RotationHandle.gameObject.SetActive(false);
             if (ScaleHandle.gameObject.activeSelf) ScaleHandle.gameObject.SetActive(false);
+
+            // HandleType.Outlineの場合、アウトラインをクリア
+            if (type == HandleType.Outline)
+            {
+                var outlineManager = TransformHandles.OutlineManager.Instance;
+                if (outlineManager != null)
+                {
+                    outlineManager.ClearSelection();
+                }
+            }
         }
     }
 }
