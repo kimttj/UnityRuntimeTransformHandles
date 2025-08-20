@@ -20,6 +20,7 @@ namespace TransformHandles
         [SerializeField] private Color highlightColor = Color.white;
 
         [Header("Shortcuts")]
+        [SerializeField] private Key selectedShortcut = Key.S;
         [SerializeField] private Key positionShortcut = Key.W;
         [SerializeField] private Key rotationShortcut = Key.E;
         [SerializeField] private Key scaleShortcut = Key.R;
@@ -312,6 +313,14 @@ namespace TransformHandles
         protected virtual void KeyboardInput()
         {
             if (Keyboard.current == null) return;
+
+            if (Keyboard.current[selectedShortcut].wasPressedThisFrame)
+            {
+                foreach (var handle in _handleGroupMap.Keys)
+                {
+                    ChangeHandleType(handle, HandleType.Seleccted);
+                }
+            }
 
             if (Keyboard.current[positionShortcut].wasPressedThisFrame)
             {

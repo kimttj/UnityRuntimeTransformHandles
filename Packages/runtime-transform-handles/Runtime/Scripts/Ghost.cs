@@ -47,6 +47,9 @@ namespace TransformHandles
         {
             switch (handleType)
             {
+                case HandleType.Seleccted:
+                    UpdateSelected();
+                    break;
                 case HandleType.Position:
                     UpdatePosition();
                     break;
@@ -86,6 +89,11 @@ namespace TransformHandles
             ResetInitialGhostTransformProperties();
         }
 
+        private void UpdateSelected()
+        {
+            // 選択されたオブジェクトの枠線を描画する
+
+        }
         private void UpdatePosition()
         {
             var positionChange = GhostTransform.position - _initialProperties.Position;

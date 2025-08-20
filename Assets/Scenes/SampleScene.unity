@@ -705,6 +705,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   highlightColor: {r: 1, g: 1, b: 1, a: 1}
+  selectedShortcut: 33
   positionShortcut: 37
   rotationShortcut: 19
   scaleShortcut: 32
@@ -1430,7 +1431,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'W: Position
+  m_text: 'S: Selected
+
+    W: Position
 
     E: Rotation
 

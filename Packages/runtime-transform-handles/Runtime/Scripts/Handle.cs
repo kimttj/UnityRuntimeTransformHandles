@@ -16,7 +16,7 @@ namespace TransformHandles
         public Transform target;
         public HandleAxes axes = HandleAxes.XYZ;
         public Space space = Space.Self;
-        public HandleType type = HandleType.Position;
+        public HandleType type = HandleType.Seleccted;
         public SnappingType snappingType = SnappingType.Relative;
 
         public Vector3 positionSnap = Vector3.zero;
@@ -139,6 +139,9 @@ namespace TransformHandles
         {
             switch (type)
             {
+                case HandleType.Seleccted:
+                    ActivateSelectedHandle();
+                    break;
                 case HandleType.Position:
                     ActivatePositionHandle();
                     break;
@@ -168,6 +171,12 @@ namespace TransformHandles
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private void ActivateSelectedHandle()
+        {
+            // 選択されたオブジェクトの枠線を描画する
+
         }
 
         private void ActivatePositionHandle()
