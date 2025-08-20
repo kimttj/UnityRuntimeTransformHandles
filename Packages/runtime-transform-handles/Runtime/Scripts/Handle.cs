@@ -244,6 +244,30 @@ namespace TransformHandles
                 {
                     outlineManager.ClearSelection();
                 }
+
+                // すべてのターゲットオブジェクトからCustomOutlineコンポーネントを削除
+                var actualTargets = Manager.GetTargets();
+                if (actualTargets != null)
+                {
+                    foreach (var actualTarget in actualTargets)
+                    {
+                        if (actualTarget != null)
+                        {
+                            var customOutline = actualTarget.GetComponent<TransformHandles.CustomOutline>();
+                            if (customOutline != null)
+                            {
+                                if (Application.isPlaying)
+                                {
+                                    Destroy(customOutline);
+                                }
+                                else
+                                {
+                                    DestroyImmediate(customOutline);
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }

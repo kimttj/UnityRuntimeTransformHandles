@@ -187,6 +187,16 @@ namespace TransformHandles
 
         private static void DestroyHandle(Handle handle)
         {
+            // ハンドルが破棄される前に、関連するオブジェクトからCustomOutlineコンポーネントを削除
+            if (handle != null && handle.type == HandleType.Outline)
+            {
+                var outlineManager = TransformHandles.OutlineManager.Instance;
+                if (outlineManager != null)
+                {
+                    outlineManager.ClearSelection();
+                }
+            }
+
             DestroyImmediate(handle.gameObject);
         }
 
@@ -219,6 +229,28 @@ namespace TransformHandles
         {
             if (!_transformHashSet.Contains(target)) { Debug.LogWarning($"{target} doesn't have a handle."); return; }
             if (handle == null) { Debug.LogError("Handle is null"); return; }
+
+            // CustomOutlineコンポーネントを削除
+            var customOutline = target.GetComponent<TransformHandles.CustomOutline>();
+            if (customOutline != null)
+            {
+                // OutlineManagerから除外
+                var outlineManager = TransformHandles.OutlineManager.Instance;
+                if (outlineManager != null)
+                {
+                    outlineManager.ClearSelection();
+                }
+
+                // CustomOutlineコンポーネントを削除
+                if (Application.isPlaying)
+                {
+                    Destroy(customOutline);
+                }
+                else
+                {
+                    DestroyImmediate(customOutline);
+                }
+            }
 
             _transformHashSet.Remove(target);
 
