@@ -175,12 +175,27 @@ namespace TransformHandles
 
         private void ActivateOutlineHandle()
         {
+            // HandleType.Outlineの場合、ターゲットが追加された後にアウトラインを適用
+            StartCoroutine(ApplyOutlineAfterDelay());
+        }
+
+        private System.Collections.IEnumerator ApplyOutlineAfterDelay()
+        {
+            // 1フレーム待機してターゲットが追加されるのを待つ
+            yield return null;
+
             // アウトライン機能を有効にする
             var outlineManager = TransformHandles.OutlineManager.Instance;
             if (outlineManager != null)
             {
-                // TransformHandleManagerから実際のターゲットオブジェクトを取得
-                var actualTargets = Manager.GetTargets();
+                // 現在のハンドルに関連するターゲットオブジェクトを取得
+                var actualTargets = Manager.GetTargetsForHandle(this);
+
+                // GetTargetsForHandle()が空の場合、一般的なGetTargets()を試す
+                if (actualTargets == null || actualTargets.Count == 0)
+                {
+                    actualTargets = Manager.GetTargets();
+                }
 
                 if (actualTargets != null && actualTargets.Count > 0)
                 {

@@ -4,6 +4,7 @@ using TransformHandles.Utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.InputSystem;
+using System.Linq;
 
 namespace TransformHandles
 {
@@ -183,6 +184,18 @@ namespace TransformHandles
             }
 
             return targets;
+        }
+
+        public List<Transform> GetTargetsForHandle(Handle handle)
+        {
+            if (handle == null) return new List<Transform>();
+
+            if (_handleGroupMap.TryGetValue(handle, out var group))
+            {
+                return group.Transforms.ToList();
+            }
+
+            return new List<Transform>();
         }
 
         private static void DestroyHandle(Handle handle)
