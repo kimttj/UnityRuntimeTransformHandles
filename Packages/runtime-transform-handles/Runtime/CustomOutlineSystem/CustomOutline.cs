@@ -9,7 +9,7 @@ namespace TransformHandles
   {
     [Header("Outline Settings")]
     [SerializeField] private Color outlineColor = Color.white;
-    [SerializeField, Range(0f, 10f)] private float outlineWidth = 2f;
+    [SerializeField, Range(0f, 10f)] private float outlineWidth = 5f;
 
     private Renderer[] renderers;
     private Material outlineMaskMaterial;

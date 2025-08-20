@@ -28,11 +28,11 @@ namespace TransformHandles
     [Header("Global Outline Settings")]
     [SerializeField] private bool enableGlobalOutline = true;
     [SerializeField] private Color defaultOutlineColor = Color.white;
-    [SerializeField, Range(0f, 10f)] private float defaultOutlineWidth = 2f;
+    [SerializeField, Range(0f, 10f)] private float defaultOutlineWidth = 5f;
 
     [Header("Selection Outline Settings")]
     [SerializeField] private bool enableSelectionOutline = true;
-    [SerializeField] private Color selectionOutlineColor = Color.yellow;
+    [SerializeField] private Color selectionOutlineColor = Color.red;
 
     private List<CustomOutline> allOutlines = new List<CustomOutline>();
     private List<CustomOutline> selectedOutlines = new List<CustomOutline>();
