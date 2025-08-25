@@ -137,6 +137,119 @@ namespace TransformHandles
             return transformHandle;
         }
 
+        /// <summary>
+        /// 既存のHandleのTransformを外部から設定する
+        /// </summary>
+        /// <param name="handle">設定対象のHandle</param>
+        /// <param name="newTarget">新しいターゲットTransform</param>
+        /// <returns>設定が成功したかどうか</returns>
+        public bool SetHandleTarget(Handle handle, Transform newTarget)
+        {
+            if (handle == null)
+            {
+                Debug.LogError("Handle is null");
+                return false;
+            }
+
+            if (newTarget == null)
+            {
+                Debug.LogError("New target is null");
+                return false;
+            }
+
+            // 既存のターゲットを取得
+            var currentTargets = GetTargetsForHandle(handle);
+            if (currentTargets == null || currentTargets.Count == 0)
+            {
+                Debug.LogWarning("Handle has no current targets");
+                return false;
+            }
+
+            // 新しいターゲットが既に他のHandleで使用されているかチェック
+            if (_transformHashSet.Contains(newTarget))
+            {
+                Debug.LogWarning($"{newTarget} is already used by another handle.");
+                return false;
+            }
+
+            // 既存のターゲットを削除（Handleを破棄しないように注意）
+            foreach (var currentTarget in currentTargets.ToList())
+            {
+                RemoveTargetWithoutDestroyingHandle(currentTarget, handle);
+            }
+
+            // 新しいターゲットを追加
+            var success = AddTarget(newTarget, handle);
+            if (!success)
+            {
+                Debug.LogError("Failed to add new target to handle");
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// 既存のHandleのTransformを外部から設定する（複数ターゲット）
+        /// </summary>
+        /// <param name="handle">設定対象のHandle</param>
+        /// <param name="newTargets">新しいターゲットTransformのリスト</param>
+        /// <returns>設定が成功したかどうか</returns>
+        public bool SetHandleTargets(Handle handle, List<Transform> newTargets)
+        {
+            if (handle == null)
+            {
+                Debug.LogError("Handle is null");
+                return false;
+            }
+
+            if (newTargets == null || newTargets.Count == 0)
+            {
+                Debug.LogError("New targets list is null or empty");
+                return false;
+            }
+
+            // 新しいターゲットが既に他のHandleで使用されているかチェック
+            foreach (var newTarget in newTargets)
+            {
+                if (newTarget == null)
+                {
+                    Debug.LogError("One of the new targets is null");
+                    return false;
+                }
+
+                if (_transformHashSet.Contains(newTarget))
+                {
+                    Debug.LogWarning($"{newTarget} is already used by another handle.");
+                    return false;
+                }
+            }
+
+            // 既存のターゲットを削除
+            var currentTargets = GetTargetsForHandle(handle);
+            if (currentTargets != null)
+            {
+                foreach (var currentTarget in currentTargets.ToList())
+                {
+                    RemoveTarget(currentTarget, handle);
+                }
+            }
+
+            // 新しいターゲットを追加
+            bool allSuccess = true;
+            foreach (var newTarget in newTargets)
+            {
+                var success = AddTarget(newTarget, handle);
+                if (!success)
+                {
+                    Debug.LogError($"Failed to add target {newTarget} to handle");
+                    allSuccess = false;
+                }
+            }
+
+            return allSuccess;
+        }
+
         public Handle CreateHandleFromList(List<Transform> targets)
         {
             if (targets.Count == 0) { Debug.LogWarning("List is empty."); return null; }
@@ -230,7 +343,7 @@ namespace TransformHandles
             return new List<Transform>();
         }
 
-        private static void DestroyHandle(Handle handle)
+        public static void DestroyHandle(Handle handle)
         {
             // ハンドルが破棄される前に、関連するオブジェクトからCustomOutlineコンポーネントを削除
             if (handle != null && handle.type == HandleType.Outline)
@@ -265,6 +378,15 @@ namespace TransformHandles
             }
 
             DestroyImmediate(handle.gameObject);
+        }
+
+        /// <summary>
+        /// 指定されたHandleを破棄する（インスタンスメソッド版）
+        /// </summary>
+        /// <param name="handle">破棄するHandle</param>
+        public void DestroyHandleInstance(Handle handle)
+        {
+            DestroyHandle(handle);
         }
 
         public void DestroyAllHandles()
@@ -344,6 +466,38 @@ namespace TransformHandles
 
             var averagePosRotScale = group.GetAveragePosRotScale();
             group.GroupGhost.UpdateGhostTransform(averagePosRotScale);
+        }
+
+        /// <summary>
+        /// Handleを破棄せずにターゲットを削除する
+        /// </summary>
+        private void RemoveTargetWithoutDestroyingHandle(Transform target, Handle handle)
+        {
+            if (!_transformHashSet.Contains(target)) { Debug.LogWarning($"{target} doesn't have a handle."); return; }
+            if (handle == null) { Debug.LogError("Handle is null"); return; }
+
+            // CustomOutlineコンポーネントを削除
+            var customOutline = target.GetComponent<TransformHandles.CustomOutline>();
+            if (customOutline != null)
+            {
+                ClearOutlineFromTarget(target);
+            }
+
+            _transformHashSet.Remove(target);
+
+            var group = _handleGroupMap[handle];
+            group.RemoveTransform(target);
+
+            // ターゲットが0個になった場合は、Ghostの位置をリセット
+            if (group.Transforms.Count == 0)
+            {
+                group.GroupGhost.ResetGhostTransform();
+            }
+            else
+            {
+                var averagePosRotScale = group.GetAveragePosRotScale();
+                group.GroupGhost.UpdateGhostTransform(averagePosRotScale);
+            }
         }
 
         private void ClearOutlineFromTarget(Transform target)

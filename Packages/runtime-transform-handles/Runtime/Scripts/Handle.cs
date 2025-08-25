@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using System.Collections.Generic;
 
 namespace TransformHandles
 {
@@ -280,6 +281,53 @@ namespace TransformHandles
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// このHandleのターゲットTransformを設定する
+        /// </summary>
+        /// <param name="newTarget">新しいターゲットTransform</param>
+        /// <returns>設定が成功したかどうか</returns>
+        public bool SetTarget(Transform newTarget)
+        {
+            if (Manager == null)
+            {
+                Debug.LogError("Manager is null");
+                return false;
+            }
+
+            return Manager.SetHandleTarget(this, newTarget);
+        }
+
+        /// <summary>
+        /// このHandleのターゲットTransformを設定する（複数ターゲット）
+        /// </summary>
+        /// <param name="newTargets">新しいターゲットTransformのリスト</param>
+        /// <returns>設定が成功したかどうか</returns>
+        public bool SetTargets(List<Transform> newTargets)
+        {
+            if (Manager == null)
+            {
+                Debug.LogError("Manager is null");
+                return false;
+            }
+
+            return Manager.SetHandleTargets(this, newTargets);
+        }
+
+        /// <summary>
+        /// このHandleの現在のターゲットTransformを取得する
+        /// </summary>
+        /// <returns>現在のターゲットTransformのリスト</returns>
+        public List<Transform> GetCurrentTargets()
+        {
+            if (Manager == null)
+            {
+                Debug.LogError("Manager is null");
+                return new List<Transform>();
+            }
+
+            return Manager.GetTargetsForHandle(this);
         }
     }
 }
