@@ -184,7 +184,7 @@ public class ObjSelector : MonoBehaviour
         _lastHandle = handle;
 
         handle.OnInteractionStartEvent += OnHandleInteractionStart;
-        handle.OnInteractionEvent += OnHandleInteraction;
+        // handle.OnInteractionEvent += OnHandleInteraction;
         handle.OnInteractionEndEvent += OnHandleInteractionEnd;
         handle.OnHandleDestroyedEvent += OnHandleDestroyed;
     }
@@ -220,7 +220,7 @@ public class ObjSelector : MonoBehaviour
     private void OnHandleDestroyed(Handle handle)
     {
         handle.OnInteractionStartEvent -= OnHandleInteractionStart;
-        handle.OnInteractionEvent -= OnHandleInteraction;
+        // handle.OnInteractionEvent -= OnHandleInteraction;
         handle.OnInteractionEndEvent -= OnHandleInteractionEnd;
         handle.OnHandleDestroyedEvent -= OnHandleDestroyed;
     }
