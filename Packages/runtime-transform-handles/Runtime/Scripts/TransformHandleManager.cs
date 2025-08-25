@@ -166,24 +166,26 @@ namespace TransformHandles
             }
 
             // 新しいターゲットが既に他のHandleで使用されているかチェック
-            if (_transformHashSet.Contains(newTarget))
+            // ただし、同じHandleで既に使用されている場合は許可
+            var existingHandle = GetHandleForTarget(newTarget);
+            if (existingHandle != null && existingHandle != handle)
             {
                 Debug.LogWarning($"{newTarget} is already used by another handle.");
                 return false;
             }
 
-            // 既存のターゲットを削除（Handleを破棄しないように注意）
-            foreach (var currentTarget in currentTargets.ToList())
+            // ハンドルの位置を直接更新（ターゲットの削除・追加は行わない）
+            if (_handleGroupMap.TryGetValue(handle, out var group))
             {
-                RemoveTargetWithoutDestroyingHandle(currentTarget, handle);
-            }
+                // 新しいターゲットの位置でハンドルを更新
+                var newPosRotScale = new PosRotScale
+                {
+                    Position = newTarget.position,
+                    Rotation = newTarget.rotation,
+                    Scale = newTarget.localScale
+                };
 
-            // 新しいターゲットを追加
-            var success = AddTarget(newTarget, handle);
-            if (!success)
-            {
-                Debug.LogError("Failed to add new target to handle");
-                return false;
+                group.GroupGhost.UpdateGhostTransform(newPosRotScale);
             }
 
             return true;
@@ -341,6 +343,29 @@ namespace TransformHandles
             }
 
             return new List<Transform>();
+        }
+
+        /// <summary>
+        /// 指定されたターゲットに関連するHandleを取得する
+        /// </summary>
+        /// <param name="target">検索するターゲット</param>
+        /// <returns>関連するHandle、見つからない場合はnull</returns>
+        public Handle GetHandleForTarget(Transform target)
+        {
+            if (target == null) return null;
+
+            foreach (var kvp in _handleGroupMap)
+            {
+                var handle = kvp.Key;
+                var group = kvp.Value;
+
+                if (group.Transforms.Contains(target))
+                {
+                    return handle;
+                }
+            }
+
+            return null;
         }
 
         public static void DestroyHandle(Handle handle)
