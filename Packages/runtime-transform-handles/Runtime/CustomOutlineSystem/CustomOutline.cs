@@ -8,7 +8,7 @@ namespace TransformHandles
   public class CustomOutline : MonoBehaviour
   {
     [Header("Outline Settings")]
-    [SerializeField] private Color outlineColor = Color.white;
+    [SerializeField] private Color outlineColor = Color.red;
     [SerializeField, Range(0f, 10f)] private float outlineWidth = 5f;
 
     private Renderer[] renderers;

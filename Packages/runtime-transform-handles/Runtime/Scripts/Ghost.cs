@@ -93,42 +93,27 @@ namespace TransformHandles
 
         private void UpdateOutline()
         {
-            // 選択されたオブジェクトにアウトラインを表示
-            var outlineManager = TransformHandles.OutlineManager.Instance;
-            if (outlineManager != null)
+            // TransformHandleManagerから実際のターゲットオブジェクトを取得
+            var actualTargets = TransformHandleManager.Instance.GetTargets();
+
+            if (actualTargets != null && actualTargets.Count > 0)
             {
-                // TransformHandleManagerから実際のターゲットオブジェクトを取得
-                var actualTargets = TransformHandleManager.Instance.GetTargets();
-
-                if (actualTargets != null && actualTargets.Count > 0)
+                // すべての実際のターゲットオブジェクトにCustomOutlineをアタッチ
+                for (int i = 0; i < actualTargets.Count; i++)
                 {
-                    // すべての実際のターゲットオブジェクトにCustomOutlineをアタッチ
-                    var objects = new List<GameObject>();
+                    var actualTarget = actualTargets[i];
 
-                    for (int i = 0; i < actualTargets.Count; i++)
+                    // Ghostオブジェクトを除外
+                    if (actualTarget.GetComponent<Ghost>() != null)
                     {
-                        var actualTarget = actualTargets[i];
-
-                        // Ghostオブジェクトを除外
-                        if (actualTarget.GetComponent<Ghost>() != null)
-                        {
-                            continue;
-                        }
-
-                        var customOutline = actualTarget.GetComponent<TransformHandles.CustomOutline>();
-                        if (customOutline == null)
-                        {
-                            // CustomOutlineスクリプトを動的にアタッチ
-                            customOutline = actualTarget.gameObject.AddComponent<TransformHandles.CustomOutline>();
-                        }
-
-                        objects.Add(actualTarget.gameObject);
+                        continue;
                     }
 
-                    // 実際のターゲットオブジェクトにアウトラインを適用
-                    if (objects.Count > 0)
+                    var customOutline = actualTarget.GetComponent<TransformHandles.CustomOutline>();
+                    if (customOutline == null)
                     {
-                        outlineManager.SelectObjects(objects.ToArray());
+                        // CustomOutlineスクリプトを動的にアタッチ
+                        customOutline = actualTarget.gameObject.AddComponent<TransformHandles.CustomOutline>();
                     }
                 }
             }
