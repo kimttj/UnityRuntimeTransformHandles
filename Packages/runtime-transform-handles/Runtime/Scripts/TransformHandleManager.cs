@@ -29,6 +29,9 @@ namespace TransformHandles
         [SerializeField] private Key spaceShortcut = Key.X;
         [SerializeField] private Key pivotShortcut = Key.Z;
 
+        [Header("Input Settings")]
+        [SerializeField] public bool enableKeyboardInput = true;
+
         private RaycastHit[] _rayHits;
 
         private Vector3 _previousMousePosition;
@@ -637,7 +640,7 @@ namespace TransformHandles
 
         protected virtual void KeyboardInput()
         {
-            if (Keyboard.current == null) return;
+            if (Keyboard.current == null || !enableKeyboardInput) return;
 
             if (Keyboard.current[outlineShortcut].wasPressedThisFrame)
             {
@@ -758,6 +761,40 @@ namespace TransformHandles
         {
             var group = _ghostGroupMap[ghost];
             group.UpdateScales(scaleChange);
+        }
+
+        /// <summary>
+        /// キーボード入力の有効・無効を設定する
+        /// </summary>
+        /// <param name="enabled">キーボード入力を有効にする場合はtrue</param>
+        public void SetKeyboardInputEnabled(bool enabled)
+        {
+            enableKeyboardInput = enabled;
+        }
+
+        /// <summary>
+        /// キーボード入力が有効かどうかを取得する
+        /// </summary>
+        /// <returns>キーボード入力が有効な場合はtrue</returns>
+        public bool IsKeyboardInputEnabled()
+        {
+            return enableKeyboardInput;
+        }
+
+        /// <summary>
+        /// キーボード入力を有効にする
+        /// </summary>
+        public void EnableKeyboardInput()
+        {
+            enableKeyboardInput = true;
+        }
+
+        /// <summary>
+        /// キーボード入力を無効にする
+        /// </summary>
+        public void DisableKeyboardInput()
+        {
+            enableKeyboardInput = false;
         }
     }
 
