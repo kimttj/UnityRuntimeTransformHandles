@@ -102,15 +102,12 @@ namespace TransformHandles
     // ---------- Setup ----------
     private void CreateOutlineMaterials()
     {
-      var maskShader = Shader.Find("Custom/CustomOutlineMask");
-      var fillShader = Shader.Find("Custom/CustomOutlineFill");
-      if (maskShader == null || fillShader == null)
-      {
-        Debug.LogError("CustomOutline: Outline shaders not found (Custom/CustomOutlineMask, Custom/CustomOutlineFill).");
-        return;
-      }
-      outlineMaskMaterial = new Material(maskShader) { name = "OutlineMask (Instance)" };
-      outlineFillMaterial = new Material(fillShader) { name = "OutlineFill (Instance)" };
+
+      outlineMaskMaterial = Instantiate(Resources.Load<Material>(@"Custom_CustomOutlineMask"));
+      outlineFillMaterial = Instantiate(Resources.Load<Material>(@"Custom_CustomOutlineFill"));
+
+      outlineMaskMaterial.name = "OutlineMask (Instance)";
+      outlineFillMaterial.name = "OutlineFill (Instance)";
     }
 
     private void Bake()
