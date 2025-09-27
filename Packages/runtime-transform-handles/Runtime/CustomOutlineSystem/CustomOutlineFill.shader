@@ -31,8 +31,8 @@ Shader "Custom/CustomOutlineFill"
         Comp NotEqual
       }
 
-      CGPROGRAM
-      #include "UnityCG.cginc"
+      HLSLPROGRAM
+      #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
 
       #pragma vertex vert
       #pragma fragment frag
@@ -48,12 +48,14 @@ Shader "Custom/CustomOutlineFill"
       struct v2f
       {
         float4 position : SV_POSITION;
-        fixed4 color : COLOR;
+        half4 color : COLOR;
         UNITY_VERTEX_OUTPUT_STEREO
       };
 
-      uniform fixed4 _OutlineColor;
-      uniform float _OutlineWidth;
+      CBUFFER_START(UnityPerMaterial)
+        half4 _OutlineColor;
+        float _OutlineWidth;
+      CBUFFER_END
 
       v2f vert(appdata input)
       {
@@ -63,20 +65,20 @@ Shader "Custom/CustomOutlineFill"
         UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(output);
 
         float3 normal = any(input.smoothNormal) ? input.smoothNormal : input.normal;
-        float3 viewPosition = UnityObjectToViewPos(input.vertex);
+        float3 viewPosition = TransformWorldToView(TransformObjectToWorld(input.vertex.xyz));
         float3 viewNormal = normalize(mul((float3x3)UNITY_MATRIX_IT_MV, normal));
 
-        output.position = UnityViewToClipPos(viewPosition + viewNormal * -viewPosition.z * _OutlineWidth / 1000.0);
+        output.position = TransformWViewToHClip(viewPosition + viewNormal * -viewPosition.z * _OutlineWidth / 1000.0);
         output.color = _OutlineColor;
 
         return output;
       }
 
-      fixed4 frag(v2f input) : SV_Target
+      half4 frag(v2f input) : SV_Target
       {
         return input.color;
       }
-      ENDCG
+      ENDHLSL
     }
   }
 }
